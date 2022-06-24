@@ -72,6 +72,9 @@ COMENTARIO \/\/.*
 }
 {COMENTARIO}    ;
 
+(?:\n|[ \t]+)   ;
+
+
 (?i:ABSTRACT)            {
         fprintf(yyout,"Linea %d, palabra reservada: %s\n",yylineno,yytext);
         return(ABSTRACT);
@@ -400,10 +403,11 @@ COMENTARIO \/\/.*
         return(CADENA);
 }
 
+.	fprintf (yyout,"Linea %d, ERROR: %s\n",yylineno,yytext);
 
 
 
-\n                              ;
+
 %%
 
 int yywrap()      {
