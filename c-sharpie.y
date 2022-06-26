@@ -180,15 +180,13 @@ tipo_basico : CHAR {printf("tipo basico char \n");}
 
 /*************/
 /* dato ::= [ ’*’ ]* dato_indexado */
-/*dato : asterisco_opcional dato_indexado */
-/*; */
-
-/*asterisco_opcional : */
-/* | asterisco_opcional '*' ;*/
 /*************/
 
-dato : dato_indexado {printf("Dato indexado \n");}
-      | dato '*' dato_indexado {printf("Dato indexado con asterisco \n");}
+dato : asterisco_opcional dato_indexado {printf(" Dato indexado\n");}
+;
+
+asterisco_opcional :
+                    | asterisco_opcional '*'
 ;
 
 /*************/
@@ -479,6 +477,231 @@ cabecera_destructor : '~' IDENTIFICADOR '(' ')' {printf("CABECERA DESTR \n");}
 /*************/
 /* FUNCIONES */
 /*************/
+
+/*************/
+/* declaracion_funcion ::= firma_funcion bloque_instrucciones */
+/*************/
+
+declaracion_funcion : firma_funcion bloque_instrucciones {printf("Declaracion funcion \n");}
+;
+
+/*************/
+/* firma_funcion ::= VOID IDENTIFICADOR parametros| tipo [ ’*’ ]* IDENTIFICADOR parametros */
+/*************/
+
+firma_funcion : VOID IDENTIFICADOR parametros {printf("FIRMA -> VOID \n");}
+               | tipo asterisco_opcional  IDENTIFICADOR parametros {printf("FIRMA -> tipo asteriscos \n");}
+;
+/*************/
+/* parametros ::= ’(’ [ [ argumentos ’;’ ]* argumentos ]? ’)’ */
+/*************/
+
+parametros : '(' ')' {printf("PARAMETROS VACIOS \n");}
+            | '(' argumentos_separados_por_punto_coma ')' {printf("PARAMETROS CON ARGS SEPARADOS POR ; \n");}
+;
+
+argumentos_separados_por_punto_coma : argumentos
+                                    | argumentos_separados_por_punto_coma ';' argumentos
+;
+
+/*************/
+/* argumentos ::= nombre_tipo ( variable )+ */
+/*************/
+
+argumentos : nombre_tipo variables_separadas_por_coma {printf("ARGUMENTOS \n");}
+;
+
+
+variables_separadas_por_coma : variable
+                              | variables_separadas_por_coma ',' variable
+;
+
+
+/*************/
+/* nombre_tipo ::= tipo [ ’*’ ]* */
+/*************/
+
+nombre_tipo : tipo asterisco_opcional {printf("NOMBRE_TIPO \n");}
+;
+
+/*************/
+/* variable ::= IDENTIFICADOR [ '=' expresion ]? */
+/*************/
+
+variable : IDENTIFICADOR {printf("VARIABLE \n");}
+         | IDENTIFICADOR '=' expresion {printf("VARIABLE CON EXPRESION \n");}
+;
+
+/***************/
+/* INSTRUCCIONES */
+/***************/
+instruccion : bloque_instrucciones  {printf("INSTRUCC -> BLOQUE \n");}
+            | instruccion_expresion {printf("INSTRUCC -> INSTR_EXP \n");}
+            | instruccion_bifurcacion {printf("INSTRUCC -> BIFURC \n");}
+            | instruccion_bucle {printf("INSTRUCC -> BUCLE \n");}
+            | instruccion_salto {printf("INSTRUCC -> SALTO \n");}
+            | instruccion_destino_salto {printf("INSTRUCC -> DESTINO_SALTO \n");}
+            | instruccion_retorno {printf("INSTRUCC -> RETORNO \n");}
+            | instruccion_lanzamiento_excepcion {printf("INSTRUCC -> LANZAMIENTO EXC \n");}
+            | instruccion_captura_excepcion {printf("INSTRUCC -> CAPT EXC \n");}
+            | instruccion_vacia {printf("INSTRUCC -> VACIA \n");}
+;
+
+declaracion_op :
+               | declaracion_op declaracion
+;
+
+instruccion_op :
+                | instruccion_op instruccion
+;
+
+/***************/
+/* bloque_instrucciones ::= ’{’ [ declaracion ]* [ instruccion ]* ’}’ */
+/***************/
+
+bloque_instrucciones : '{' declaracion_op instruccion_op '}' {printf(" EMPIEZA BLOQUE INSTR \n");}
+;
+
+/***************/
+/* instruccion_expresion ::= expresion_funcional ’;’ | asignacion ’;’ */
+/***************/
+
+instruccion_expresion : expresion_funcional ';'  {printf(" INSTRUCCION EXPR -> EXPR FUNCIONAL \n");}
+                      | asignacion ';' {printf(" INSTRUCCION EXPR -> ASIGNACION \n");}
+;
+
+
+/***************/
+/* asignacion ::= expresion_indexada operador_asignacion expresion */
+/***************/
+
+asignacion : expresion_indexada operador_asignacion expresion  {printf(" ASIGNACION \n");}
+;
+
+/***************/
+/* operador_asignacion ::= ’=’ | ’*=’ | ’/=’ | ’%=’ | ’+=’ | ’-=’ | ’<<=’ | ’>>=’ | ’&=’ | ’^=’| ’|=’ */
+/***************/
+operador_asignacion : '=' {printf("OPERADOR ASIG '=' \n");}
+                    |'*=' {printf("OPERADOR ASIG '*=' \n");}
+                    | '/=' {printf("OPERADOR ASIG '/=' \n");}
+                    | '%=' {printf("OPERADOR ASIG '%=' \n");}
+                    | '+=' {printf("OPERADOR ASIG '+=' \n");}
+                    | '-=' {printf("OPERADOR ASIG '-=' \n");}
+                    | '<<=' {printf("OPERADOR ASIG '<<=' \n");}
+                    | '>>=' {printf("OPERADOR ASIG '>>=' \n");}
+                    | '&=' {printf("OPERADOR ASIG '&=' \n");}
+                    | '^=' {printf("OPERADOR ASIG '^=' \n");}
+                    | '|=' {printf("OPERADOR ASIG '|=' \n");}
+;
+
+
+/***************/
+/* instruccion_bifurcacion ::= ’if’ ’(’ expresion ’)’ instruccion [ ’else’ instruccion ]? | ’switch’ ’(’ expresion ’)’ ’{’ [ instruccion_caso ]+ ’}’ */
+/***************/
+
+instruccion_bifurcacion : IF '(' expresion ')' instruccion {printf("INSTRUCCION BIFUR SOLO IF '=' \n");}
+                         | IF '(' expresion ')' instruccion ELSE instruccion {printf("INSTRUCCION BIFUR IF-ELSE '=' \n");}
+                         | SWITCH '(' expresion ')' '{' instruccion_casos '}'  {printf("INSTRUCCION BIFUR SWITCH '=' \n");}
+;
+
+instruccion_casos : instruccion_caso
+                  | instruccion_casos instruccion_caso
+;
+
+/***************/
+/* instruccion_caso ::= ’case’ expresion ’:’ instruccion | ’default’ ’:’ instruccion */
+/***************/
+
+instruccion_caso : CASE expresion ':' instruccion {printf("INSTRUCCION CASO CASE \n");}
+                 | DEFAULT ':' instruccion {printf("INSTRUCCION CASO DEFAULT \n");}
+;
+/***************/
+/* instruccion_bucle ::= ’while’ ’(’ expresion ’)’ instruccion | ’do’ instruccion ’while’ ’( expresion ’)’ ’;’| ’for’ ’(’ ( asignacion )* ’;’ expresion ’;’ ( expresion )* ’)’ instruccion*/
+/***************/
+
+instruccion_bucle : WHILE '(' expresion ')' instruccion {printf("INSTRUCCION BUCLE WHILE \n");}
+                 | DO instruccion WHILE '(' expresion ')' ';' {printf("INSTRUCCION BUCLE DO-WHILE \n");}
+                 | FOR '(' asignaciones_opcionales_separadas_por_coma ';' expresion ';' expresiones_opcionales_por_coma ')' instruccion {printf("INSTRUCCION BUCLE DO \n");}
+;
+
+asignaciones_opcionales_separadas_por_coma :
+                                            | asignaciones_opcionales_separadas_por_coma ',' asignacion
+;
+expresiones_opcionales_por_coma :
+                                            | expresiones_opcionales_por_coma ',' expresion
+;
+
+/***************/
+/* instruccion_salto ::= ’goto’ IDENTIFICADOR ’;’ | ’continue’ ’;’ | ’break’ ’;’ */
+/***************/
+
+instruccion_salto : GOTO IDENTIFICADOR ';' {printf("INSTRUCCION SALTO GOTO \n");}
+                    | CONTINUE ';'  {printf("INSTRUCCION SALTO CONTINUE \n");}
+                    | BREAK ';'  {printf("INSTRUCCION SALTO BREAK \n");}
+;
+
+/***************/
+/* instruccion_retorno ::= ’return’ [ expresion ]? ’;’ */
+/***************/
+
+instruccion_retorno : RETURN ';' {printf("INSTRUCCION RETORNO \n");}
+                    | RETURN expresion ';' {printf("INSTRUCCION RETORNO EXPR \n");}
+;
+
+/***************/
+/* instruccion_lanzamiento_excepcion ::= ’throw’ expresion ’;’ */
+/***************/
+
+instruccion_lanzamiento_excepcion : THROW expresion ';' {printf("INSTRUCCION LANZ EXCEPCION \n");}
+;
+/***************/
+/* instruccion_captura_excepcion ::= ’try’ bloque_instrucciones clausulas_catch | ’try’ bloque_instrucciones [ clausulas_catch ]? clausula_finally*/
+/***************/
+
+instruccion_captura_excepcion : TRY bloque_instrucciones clausulas_catch {printf("INSTRUCCION CAPT EXC \n");}
+                              | TRY bloque_instrucciones clausula_finally {printf("INSTRUCCION CAPT EXC FINALLY\n");}
+                              | TRY bloque_instrucciones clausulas_catch clausula_finally {printf("INSTRUCCION CAPT EXC FINALLY  \n");}
+;
+
+/***************/
+/* clausulas_catch ::= [ clausula_catch_especifica ]+ | [ clausula_catch_especifica ]* clausula_catch_general*/
+/***************/
+
+clausulas_catch : clausulas_catch_especificas {printf("CLAUSULAS CATCH \n");}
+                | clausulas_catch_especifica_op clausula_catch_general {printf("CLAUSULAS CATCH ESPEC CON GENERAL \n");}
+;
+clausulas_catch_especificas : clausulas_catch_especifica
+                            | clausulas_catch_especificas clausulas_catch_especifica
+;
+
+clausulas_catch_especifica_op :
+                              | clausulas_catch_especifica_op clausulas_catch_especifica
+;
+
+/***************/
+/* clausula_catch_especifica ::= ’catch’ ’(’ nombre_tipo ’)’ bloque_instrucciones */
+/***************/
+clausula_catch_especifica : CATCH '(' nombre_tipo ')' bloque_instrucciones
+;
+
+/***************/
+/* clausula_catch_general ::= ’catch’ bloque_instrucciones */
+/***************/
+clausula_catch_general : CATCH bloque_instrucciones
+;
+
+/***************/
+/* clausula_finally ::= ’finally’ bloque_instrucciones */
+/***************/
+clausula_finally : FINALLY bloque_instrucciones
+;
+
+/***************/
+/* instruccion_vacia ::= ';' */
+/***************/
+instruccion_vacia : ';'
+;
+
 
 /***************/
 /* EXPRESIONES */
