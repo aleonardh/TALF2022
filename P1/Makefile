@@ -1,7 +1,7 @@
 # Fichero flex a compilar (sin extensión)
-SOURCE=LeonardHerreraAlejandro
+SOURCE=LeonardHerreraRodriguezVillalta
 
-$(SOURCE): lex.yy.c
+$(SOURCE): lex.yy.c	
 	gcc -o $@ $^ -lfl
 
 lex.yy.c: $(SOURCE).l

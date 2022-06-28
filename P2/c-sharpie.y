@@ -8,6 +8,8 @@
 
   #define YYDEBUG 1
 
+  int yyerror(char *);
+
 %}
 
 %token ABSTRACT BASE BOOLEAN BREAK CASE CATCH CHAR CLASS CONTINUE DEFAULT DO DOUBLE ELSE ENUM EXTERN FINALLY
@@ -48,6 +50,7 @@ declaracion : declaracion_espacio_nombres {printf("DECL -> ESPACIO_NOMBRES \n");
              | declaracion_variable {printf("DECL -> VARIABLES \n");}
              | declaracion_tipo {printf("DECL -> DECLARACION_TIPO \n");}
              | declaracion_funcion {printf("DECL -> DECLARACION_FUNCION \n");}
+             | error ';'  {yyerrok; printf("\tvariable_sin_identificador -> error \n");}             
 ;
 
 /************/
@@ -484,7 +487,7 @@ cabecera_destructor : '~' IDENTIFICADOR {printf("CABECERA DESTR \n");}
 /* declaracion_funcion ::= firma_funcion bloque_instrucciones */
 /*************/
 
-declaracion_funcion : firma_funcion bloque_instrucciones {printf("Declaracion funcion \n");}
+declaracion_funcion : firma_funcion bloque_instrucciones {printf("Declaracion funcion \n");}                    
 ;
 
 /*************/
@@ -492,7 +495,7 @@ declaracion_funcion : firma_funcion bloque_instrucciones {printf("Declaracion fu
 /*************/
 
 firma_funcion : VOID IDENTIFICADOR parametros {printf("FIRMA -> VOID \n");}
-               | tipo asterisco_opcional  IDENTIFICADOR parametros {printf("FIRMA -> tipo asteriscos \n");}
+               | tipo asterisco_opcional  IDENTIFICADOR parametros {printf("FIRMA -> tipo asteriscos \n");}               
 ;
 /*************/
 /* parametros ::= ’(’ [ [ argumentos ’;’ ]* argumentos ]? ’)’ */
@@ -501,6 +504,11 @@ firma_funcion : VOID IDENTIFICADOR parametros {printf("FIRMA -> VOID \n");}
 parametros : '(' ')' {printf("PARAMETROS VACIOS \n");}
             | '(' argumentos_separados_por_punto_coma ')' {printf("PARAMETROS CON ARGS SEPARADOS POR ; \n");}
 ;
+
+// REGLA ANTIGUA
+/*argumentos_separados_por_punto_coma : argumentos
+                                    | argumentos_separados_por_punto_coma ';' argumentos
+;*/
 
 argumentos_separados_por_punto_coma : argumentos
                                     | argumentos_separados_por_punto_coma ';' argumentos

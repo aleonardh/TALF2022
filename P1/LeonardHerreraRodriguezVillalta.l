@@ -23,7 +23,7 @@ OPERADORES_UN_SOLO_CAR_MEMORIA (?:\.|\*|\&|\[|\])
 OPERADORES_UN_SOLO_CAR_BITS (?:\-|\&|\||\^)
 OPERADORES_UN_SOLO_CAR_RELACIONALES (?:<|>)
 OPERADORES_UN_SOLO_CAR_LOGICOS (?:<|>)
-OPERADORES_UN_SOLO_CAR_OTROS [=]
+OPERADORES_UN_SOLO_CAR_OTROS [\=]
 
 CTC_ENTERA_DECIMAL [0-9]+
 CTC_ENTERA_HEX 0[xX][0-9a-fA-F]+
@@ -66,9 +66,9 @@ COMENTARIO \/\/.*
 }
 <COMENTARIO_MULTILINEA>{
 "*/"      BEGIN(INITIAL);
-[^*\n]+   // eat comment in chunks
-"*"       // eat the lone star
-\n        yylineno++;
+[^*\n]+
+"*"
+\n        ;
 }
 {COMENTARIO}    ;
 
@@ -217,7 +217,7 @@ COMENTARIO \/\/.*
 }
 (?i:STRUCT)      {
         fprintf(yyout,"Linea %d, palabra reservada: %s\n",yylineno,yytext);
-        return(STATIC);
+        return(STRUCT);
 }
 (?i:SWITCH)      {
         fprintf(yyout,"Linea %d, palabra reservada: %s\n",yylineno,yytext);
@@ -319,7 +319,7 @@ COMENTARIO \/\/.*
 }
 (?:>>=)      {
         fprintf(yyout,"Linea %d, operador: %s\n",yylineno,yytext);
-        return(MULT_ASIG);
+        return(DESPD_ASIG);
 }
 (?:>=)      {
         fprintf(yyout,"Linea %d, operador: %s\n",yylineno,yytext);
