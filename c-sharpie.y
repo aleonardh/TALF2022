@@ -18,13 +18,8 @@
 %token TRUE FALSE SIZEOF IDENTIFICADOR ENTERO CADENA REAL CARACTER PTR_ACCESO INC DEC DESPI DESPD LE GE EQ
 %token NEQ AND OR MULT_ASIG DIV_ASIG MOD_ASIG SUMA_ASIG RESTA_ASIG DESPI_ASIG DESPD_ASIG AND_ASIG XOR_ASIG
 %token OR_ASIG
-%start modulo
 
 %%
-
-/************/
-/* PROGRAMA */
-/************/
 
 /************/
 /*modulo ::= [ directiva_uso ]* [ declaracion ]+  */
@@ -33,7 +28,7 @@
 modulo : directiva_uso_opcional declaraciones {printf("modulo \n");}
 ;
 
-directiva_uso_opcional : {printf("directiva vacía");}
+directiva_uso_opcional : {printf("directiva vacía\n");}
                         | directiva_uso_opcional directiva_uso
 ;
 
@@ -49,7 +44,10 @@ declaraciones : declaracion
 */
 /************/
 
-declaracion : declaracion_espacio_nombres
+declaracion : declaracion_espacio_nombres {printf("DECL -> ESPACIO_NOMBRES \n");}
+             | declaracion_variable {printf("DECL -> VARIABLES \n");}
+             | declaracion_tipo {printf("DECL -> DECLARACION_TIPO \n");}
+             | declaracion_funcion {printf("DECL -> DECLARACION_FUNCION \n");}
 ;
 
 /************/
@@ -61,17 +59,19 @@ directiva_uso : USING nombre_tipo_o_espacio_nombres ';' {printf("dir_uso -> USIN
                | USING IDENTIFICADOR '=' nombre_tipo_o_espacio_nombres ';' {printf("dir_uso -> USING ID = nom_tipo_o_esp_noms \n");}
 ;
 
+
 /************/
 /*nombre_tipo_o_espacio_nombres ::= [ identificador_con_tipos ’.’ ]* identificador_con_tipos*/
 /************/
-nombre_tipo_o_espacio_nombres :  identificador_con_tipos {printf("nom_tipo_o_esp_noms -> id_tipos \n");}
+nombre_tipo_o_espacio_nombres :  identificador_con_tipos_separados_por_puntos  {printf("nom_tipo_o_esp_noms -> id_tipos \n");}
 ;
 
+
 /* uno o más identificadores con tipo , separados por puntos, opcional lo de los nombres_tipo_espacio */
-identificador_con_tipos : IDENTIFICADOR {printf("id_tipo \n");}
-                         | identificador_con_tipos '.' IDENTIFICADOR {printf("identificador con tipos separado por puntos sin nombres de tipo o espacio");}
-                         | identificador_con_tipos '.' IDENTIFICADOR '(' nombre_tipo_o_espacio_nombres_separados_por_coma ')' {printf("identificador con tipos separado por puntos sin nombres de tipo o espacio");}
+identificador_con_tipos_separados_por_puntos : identificador_con_tipos {printf("id_tipo \n");}
+                         | identificador_con_tipos_separados_por_puntos '.' identificador_con_tipos {printf("identificador con tipos separado por puntos sin nombres de tipo o espacio\n");}
 ;
+
 
 /* uno o más nombres de espacio , separados por comas */
 nombre_tipo_o_espacio_nombres_separados_por_coma : nombre_tipo_o_espacio_nombres
@@ -82,9 +82,9 @@ nombre_tipo_o_espacio_nombres_separados_por_coma : nombre_tipo_o_espacio_nombres
 /************/
 
 
-
-
-
+identificador_con_tipos : IDENTIFICADOR {printf("ID_TIPOS -> ID \n");}
+                        |  IDENTIFICADOR '(' nombre_tipo_o_espacio_nombres_separados_por_coma ')' {printf("ID_TIPOS -> ID CON NOMBRES\n");}
+;
 
 /*******************/
 /* ESPACIO NOMBRES */
@@ -127,44 +127,44 @@ declaracion_variable : tipo nombre_separados_por_comas ';'
 /* tipo ::= ’<’ nombre_tipo_o_espacio_nombres ’>’ | tipo_escalar */
 /*************/
 
-tipo : '<' nombre_tipo_o_espacio_nombres '>' {printf("Tipo < nombre_tipo>");}
-      | tipo_escalar
+tipo : '<' nombre_tipo_o_espacio_nombres '>' {printf("Tipo < nombre_tipo>\n");}
+      | tipo_escalar  {printf("Tipo -> tipo_escalar\n");}
 ;
 
 
 nombre_separados_por_comas : nombre
-                             | nombre_separados_por_comas ',' nombre {printf("Nombre separados por comas");}
+                             | nombre_separados_por_comas ',' nombre {printf("Nombre separados por comas\n");}
 ;
 
 /*************/
 /* nombre ::= dato [ ’=’ valor ]? */
 /*************/
-nombre : dato {printf("dato sin valor");}
-        | dato '=' valor {printf("dato con valor");}
+nombre : dato {printf("dato sin valor\n");}
+        | dato '=' valor {printf("dato con valor\n");}
 ;
 
 
 /*************/
 /* tipo_escalar ::= [ signo ]? [ longitud ]? tipo_basico */
 /*************/
-tipo_escalar : tipo_basico {printf("tipo escalar sin signo ni longitud");}
-              | signo tipo_basico {printf("tipo escalar solo signo");}
-              | longitud tipo_basico {printf("tipo escalar solo longitud");}
-              | signo longitud tipo_basico {printf("tipo escalar con signo y longitud");}
+tipo_escalar : tipo_basico {printf("tipo escalar sin signo ni longitud \n");}
+              | signo tipo_basico {printf("tipo escalar solo signo \n");}
+              | longitud tipo_basico {printf("tipo escalar solo longitud \n");}
+              | signo longitud tipo_basico {printf("tipo escalar con signo y longitud \n");}
 ;
 
 /*************/
 /* longitud ::= ’short’ | ’long’ */
 /*************/
-longitud : SHORT {printf("longitud short");}
-         | LONG  {printf("longitud long");}
+longitud : SHORT {printf("longitud short \n");}
+         | LONG  {printf("longitud long \n");}
 ;
 
 /*************/
 /* signo ::= ’signed’ | ’unsigned’ */
 /*************/
-signo : SIGNED {printf("signo signed");}
-         | UNSIGNED  {printf("signo unsigned");}
+signo : SIGNED {printf("signo signed \n");}
+         | UNSIGNED  {printf("signo unsigned \n");}
 ;
 
 /*************/
@@ -193,20 +193,20 @@ asterisco_opcional :
 /* dato_indexado ::= IDENTIFICADOR [ ’[’ ( expresion )* ’]’ ]* */
 /*********/
 
-dato_indexado : IDENTIFICADOR {printf("dato indexado ID");}
-               | IDENTIFICADOR '[' expresiones_separadas_por_comas ']' {printf("dato indexado ID con expresiones entre corch ");}
+dato_indexado : IDENTIFICADOR {printf("dato indexado ID\n");}
+               | IDENTIFICADOR '[' expresiones_separadas_por_comas ']' {printf("dato indexado ID con expresiones entre corch \n");}
 ;
 
 expresiones_separadas_por_comas :
-                                 | expresiones_separadas_por_comas ',' expresion {printf("expresiones separadas por comas");}
+                                 | expresiones_separadas_por_comas ',' expresion {printf("expresiones separadas por comas\n");}
 ;
 
 /*************/
 /* valor ::= expresion| ’[’ ( valor )+ ’]’ */
 /*********/
 
-valor : expresion {printf("Valor -> solo expr");}
-      | '[' valores_separados_por_comas ']' {printf("Valores separados por comas entre corch ");}
+valor : expresion {printf("Valor -> solo expr\n");}
+      | '[' valores_separados_por_comas ']' {printf("Valores separados por comas entre corch \n");}
 ;
 
 valores_separados_por_comas : valor
@@ -219,11 +219,11 @@ valores_separados_por_comas : valor
 /*********/
 /* declaracion_tipo */
 /*********/
-declaracion_tipo : nombramiento_tipo {printf("Declaracion tipo -> nomb_tipo");}
-                 | declaracion_struct_union {printf("Declaracion tipo -> declaracion_struct_union");}
-                 | declaracion_interfaz {printf("Declaracion tipo -> declaracion_interfaz");}
-                 | declaracion_enum {printf("Declaracion tipo -> declaracion_enum");}
-                 | declaracion_clase {printf("Declaracion tipo -> declaracion_clase");}
+declaracion_tipo : nombramiento_tipo {printf("Declaracion tipo -> nomb_tipo\n");}
+                 | declaracion_struct_union {printf("Declaracion tipo -> declaracion_struct_union\n");}
+                 | declaracion_interfaz {printf("Declaracion tipo -> declaracion_interfaz\n");}
+                 | declaracion_enum {printf("Declaracion tipo -> declaracion_enum\n");}
+                 | declaracion_clase {printf("Declaracion tipo -> declaracion_clase\n");}
 ;
 
 
@@ -235,38 +235,38 @@ nombramiento_tipo : TYPEDEF tipo IDENTIFICADOR ';'
 /*********/
 /* declaracion_struct_union ::= [ modificador ]* struct_union [ IDENTIFICADOR ]? ’{’ [ declaracion_campo ]+ ’}’ */
 /*********/
-declaracion_struct_union : modificadores_opcionales struct_union
-                           '{' declaracion_campos  '}'
-                           | modificadores_opcionales struct_union IDENTIFICADOR
-                           '{' declaracion_campos  '}'
+declaracion_struct_union : modificadores_opcionales struct_union '{' declaracion_campos '}' {printf("DECLAR STR_UNION SIN ID \n");}
+                           | modificadores_opcionales struct_union IDENTIFICADOR '{' declaracion_campos  '}' {printf("DECLAR STR_UNION SIN ID \n");}
 ;
+
 /*********/
 /* MODIFICADORES OPCIONALES */
 /*********/
 modificadores_opcionales :
-                         | modificadores_opcionales modificador
+                         | modificadores_opcionales modificador {printf("MODS OPCIONALES \n");}
 ;
 /*********/
 /* modificador */
 /*********/
 
-modificador : NEW {printf("MOD -> NEW");}
-            | PUBLIC {printf("MOD -> PUBLIC");}
-            | PROTECTED {printf("MOD -> PUBLIC");}
-            | INTERNAL {printf("MOD -> INTERNAL");}
-            | PRIVATE {printf("MOD -> PRIVATE");}
-            | STATIC {printf("MOD -> STATIC");}
-            | VIRTUAL {printf("MOD -> VIRTUAL");}
-            | SEALED {printf("MOD -> SEALED");}
-            | OVERRIDE {printf("MOD -> OVERRIDE");}
-            | ABSTRACT {printf("MOD -> ABSTRACT");}
-            | EXTERN {printf("MOD -> EXTERN");}
+modificador : NEW {printf("MOD -> NEW\n");}
+            | PUBLIC {printf("MOD -> PUBLIC\n");}
+            | PROTECTED {printf("MOD -> PUBLIC\n");}
+            | INTERNAL {printf("MOD -> INTERNAL\n");}
+            | PRIVATE {printf("MOD -> PRIVATE\n");}
+            | STATIC {printf("MOD -> STATIC \n");}
+            | VIRTUAL {printf("MOD -> VIRTUAL\n");}
+            | SEALED {printf("MOD -> SEALED\n");}
+            | OVERRIDE {printf("MOD -> OVERRIDE\n");}
+            | ABSTRACT {printf("MOD -> ABSTRACT\n");}
+            | EXTERN {printf("MOD -> EXTERN\n");}
 ;
 /*********/
 /* struct_union ::= ’struct’ | ’union’ */
 /*********/
-struct_union : STRUCT {printf("struct_union -> STRUCT");}
-             | UNION  {printf("struct_union -> UNION");}
+struct_union : STRUCT {printf("struct_union -> STRUCT\n");}
+             | UNION  {printf("struct_union -> UNION\n");}
+;
 
 
 
@@ -276,18 +276,20 @@ struct_union : STRUCT {printf("struct_union -> STRUCT");}
 
 /* DEFINICIÓN DE UNO O MÁS DECLARACION_CAMPO */
 
-declaracion_campos : declaracion_campo
-                    | declaracion_campos declaracion_campo
+declaracion_campos : declaracion_campo {printf("UNA SOLA DECL CAMPO \n");}
+                    | declaracion_campos declaracion_campo {printf("VARIAS DECL CAMPOS \n");}
 ;
 
-declaracion_campo : tipo nombres_separados_por_comas ';' {printf("declaracion_campo -> tipo nombre(s)");}
-                  | declaracion_struct_union nombres_separados_por_comas ';' {printf("declaracion_campo -> declaracion_struct_union nombre(s)");}
+
+
+declaracion_campo : tipo nombres_separados_por_comas ';' {printf("declaracion_campo -> tipo nombre(s)\n");}
+                  | declaracion_struct_union nombres_separados_por_comas ';' {printf("declaracion_campo -> declaracion_struct_union nombre(s)\n");}
 ;
 
 /* DEFINICIÓN DE UNO O MÁS NOMBRES_separados_por_comas */
 
-nombres : nombres_separados_por_comas
-        | nombres_separados_por_comas ',' nombre
+nombres_separados_por_comas : nombre
+                            | nombres_separados_por_comas ',' nombre
 ;
 
 
@@ -295,14 +297,14 @@ nombres : nombres_separados_por_comas
 /* declaracion_interfaz ::= [ modificador ]* ’interface’ IDENTIFICADOR [ herencia ]? cuerpo_interfaz */
 /*********/
 
-declaracion_interfaz : modificadores_opcionales INTERFACE IDENTIFICADOR cuerpo_interfaz {printf("declaracion_interfaz sin herencia");}
-                     | modificadores_opcionales INTERFACE IDENTIFICADOR herencia cuerpo_interfaz {printf("declaracion_interfaz con herencia");}
+declaracion_interfaz : modificadores_opcionales INTERFACE IDENTIFICADOR cuerpo_interfaz {printf("declaracion_interfaz sin herencia\n");}
+                     | modificadores_opcionales INTERFACE IDENTIFICADOR herencia cuerpo_interfaz {printf("declaracion_interfaz con herencia\n");}
 ;
 
 /*********/
 /* herencia ::= ’:’ ( nombre_tipo_o_espacio_nombres )+ */
 /*********/
-herencia : ':' nombre_tipo_o_espacio_nombres_separados_por_coma {printf("herencia ");}
+herencia : ':' nombre_tipo_o_espacio_nombres_separados_por_coma {printf("herencia \n");}
 ;
 
 /*********/
@@ -335,7 +337,7 @@ declaracion_enum : modificadores_opcionales ENUM IDENTIFICADOR cuerpo_enum {prin
 /* cuerpo_enum ::= ’{’ ( declaracion_miembro_enum )+ ’}’ */
 /*********/
 
-cuerpo_enum : '{' declaracion_miembro_enum_separados_por_puntos '}' {printf("cuerpo_enum");}
+cuerpo_enum : '{' declaracion_miembro_enum_separados_por_comas '}' {printf("cuerpo_enum\n");}
 ;
 
 declaracion_miembro_enum_separados_por_comas : declaracion_miembro_enum
@@ -346,8 +348,8 @@ declaracion_miembro_enum_separados_por_comas : declaracion_miembro_enum
 /* declaracion_miembro_enum ::= IDENTIFICADOR [ ’=’ expresion ]?’}’ */
 /*********/
 
-declaracion_miembro_enum : IDENTIFICADOR {printf("declaracion_miembro_enum sin expresion");}
-                         | IDENTIFICADOR '=' expresion {printf("declaracion_miembro_enum con expresion");}
+declaracion_miembro_enum : IDENTIFICADOR {printf("declaracion_miembro_enum sin expresion\n");}
+                         | IDENTIFICADOR '=' expresion {printf("declaracion_miembro_enum con expresion\n");}
 ;
 
 /**********/
@@ -358,8 +360,8 @@ declaracion_miembro_enum : IDENTIFICADOR {printf("declaracion_miembro_enum sin e
 /* declaracion_clase ::= [ modificador ]* ’class’ IDENTIFICADOR [ herencia ]? cuerpo_clase */
 /*********/
 
-declaracion_clase : modificadores_opcionales_clase CLASS IDENTIFICADOR cuerpo_clase {printf("declaracion_clase sin herencia \n");}
-                   | modificadores_opcionales_clase CLASS IDENTIFICADOR herencia cuerpo_clase {printf("declaracion_clase con herencia \n");}
+declaracion_clase : modificadores_opcionales CLASS IDENTIFICADOR cuerpo_clase {printf("declaracion_clase sin herencia \n");}
+                   | modificadores_opcionales CLASS IDENTIFICADOR herencia cuerpo_clase {printf("declaracion_clase con herencia \n");}
 ;
 
 modificadores_opcionales_clase :
@@ -396,7 +398,7 @@ declaracion_elemento_clase : declaracion_tipo {printf("declaracion tipo \n");}
                             | declaracion_metodo {printf("declaracion metodo \n");}
                             | declaracion_constructor {printf("declaracion constructor \n");}
                             | declaracion_destructor {printf("declaracion destructor \n");}
-
+;
 
 
 /*********/
@@ -415,15 +417,14 @@ modificadores_atributo : NEW {printf("MOD CLASE -> NEW \n");}
                       | INTERNAL {printf("MOD ATRIBUTO -> INTERNAL \n");}
                       | PRIVATE {printf("MOD ATRIBUTO -> PRIVATE \n");}
                       | STATIC {printf("MOD ATRIBUTO -> STATIC \n");}
-                      | READONLY {printf("MOD ATRIBUTO -> READONLY \n");}
-                      | VOLATILE {printf("MOD ATRIBUTO -> VOLATILE \n");}
+
 ;
 
 
 /*********/
 /* declaracion_metodo ::= [ modificador ]* firma_funcion bloque_instrucciones */
 /*********/
-declaracion_metodo : modificadores_opcionales firma_funcion bloque_instrucciones {printf("declaracion metodo");}
+declaracion_metodo : modificadores_opcionales firma_funcion bloque_instrucciones {printf("declaracion metodo\n");}
 ;
 
 /*********/
@@ -437,7 +438,7 @@ modificador_constr_opcional :
                             | modificador_constr_opcional modificador_constr
 ;
 
-modificador_constr : | PUBLIC {printf("MOD CONSTR -> PUBLIC \n");}
+modificador_constr :  PUBLIC {printf("MOD CONSTR -> PUBLIC \n");}
                      | PROTECTED {printf("MOD CONSTR -> PROTECTED \n");}
                      | INTERNAL {printf("MOD CONSTR -> INTERNAL \n");}
                      | PRIVATE {printf("MOD CONSTR -> PRIVATE \n");}
@@ -470,7 +471,8 @@ declaracion_destructor : modificadores_opcionales cabecera_destructor bloque_ins
 /* cabecera_destructor ::= ’~’ IDENTIFICADOR ’(’ ’)’ */
 /*********/
 
-cabecera_destructor : '~' IDENTIFICADOR '(' ')' {printf("CABECERA DESTR \n");}
+cabecera_destructor : '~' IDENTIFICADOR {printf("CABECERA DESTR \n");}
+                    | '~' IDENTIFICADOR '(' ')' {printf("CABECERA DESTR \n");}
 ;
 
 
@@ -582,25 +584,24 @@ asignacion : expresion_indexada operador_asignacion expresion  {printf(" ASIGNAC
 /* operador_asignacion ::= ’=’ | ’*=’ | ’/=’ | ’%=’ | ’+=’ | ’-=’ | ’<<=’ | ’>>=’ | ’&=’ | ’^=’| ’|=’ */
 /***************/
 operador_asignacion : '=' {printf("OPERADOR ASIG '=' \n");}
-                    |'*=' {printf("OPERADOR ASIG '*=' \n");}
-                    | '/=' {printf("OPERADOR ASIG '/=' \n");}
-                    | '%=' {printf("OPERADOR ASIG '%=' \n");}
-                    | '+=' {printf("OPERADOR ASIG '+=' \n");}
-                    | '-=' {printf("OPERADOR ASIG '-=' \n");}
-                    | '<<=' {printf("OPERADOR ASIG '<<=' \n");}
-                    | '>>=' {printf("OPERADOR ASIG '>>=' \n");}
-                    | '&=' {printf("OPERADOR ASIG '&=' \n");}
-                    | '^=' {printf("OPERADOR ASIG '^=' \n");}
-                    | '|=' {printf("OPERADOR ASIG '|=' \n");}
+                    | MULT_ASIG {printf("OPERADOR ASIG '*=' \n");}
+                    | DIV_ASIG {printf("OPERADOR ASIG '/=' \n");}
+                    | MOD_ASIG {printf("OPERADOR ASIG MOD ASIG \n");}
+                    | SUMA_ASIG {printf("OPERADOR ASIG '+=' \n");}
+                    | RESTA_ASIG {printf("OPERADOR ASIG '-=' \n");}
+                    | DESPI_ASIG {printf("OPERADOR ASIG '<<=' \n");}
+                    | DESPD_ASIG {printf("OPERADOR ASIG '>>=' \n");}
+                    | AND_ASIG {printf("OPERADOR ASIG '&=' \n");}
+                    | XOR_ASIG {printf("OPERADOR ASIG '^=' \n");}
+                    | OR_ASIG {printf("OPERADOR ASIG '|=' \n");}
 ;
-
 
 /***************/
 /* instruccion_bifurcacion ::= ’if’ ’(’ expresion ’)’ instruccion [ ’else’ instruccion ]? | ’switch’ ’(’ expresion ’)’ ’{’ [ instruccion_caso ]+ ’}’ */
 /***************/
 
-instruccion_bifurcacion : IF '(' expresion ')' instruccion {printf("INSTRUCCION BIFUR SOLO IF '=' \n");}
-                         | IF '(' expresion ')' instruccion ELSE instruccion {printf("INSTRUCCION BIFUR IF-ELSE '=' \n");}
+instruccion_bifurcacion : IF '(' expresion ')' instruccion {printf("INSTRUCCION BIFUR SOLO IF \n");}
+                         | IF '(' expresion ')' instruccion ELSE instruccion {printf("INSTRUCCION BIFUR IF-ELSE \n");}
                          | SWITCH '(' expresion ')' '{' instruccion_casos '}'  {printf("INSTRUCCION BIFUR SWITCH '=' \n");}
 ;
 
@@ -639,6 +640,13 @@ instruccion_salto : GOTO IDENTIFICADOR ';' {printf("INSTRUCCION SALTO GOTO \n");
                     | CONTINUE ';'  {printf("INSTRUCCION SALTO CONTINUE \n");}
                     | BREAK ';'  {printf("INSTRUCCION SALTO BREAK \n");}
 ;
+/***************/
+/* instruccion_destino_salto ::= IDENTIFICADOR ’:’ instruccion ’;’ */
+/***************/
+
+instruccion_destino_salto : IDENTIFICADOR ':' instruccion ';' {printf("INSTRUCCION SALTO GOTO \n");}
+
+;
 
 /***************/
 /* instruccion_retorno ::= ’return’ [ expresion ]? ’;’ */
@@ -670,12 +678,12 @@ instruccion_captura_excepcion : TRY bloque_instrucciones clausulas_catch {printf
 clausulas_catch : clausulas_catch_especificas {printf("CLAUSULAS CATCH \n");}
                 | clausulas_catch_especifica_op clausula_catch_general {printf("CLAUSULAS CATCH ESPEC CON GENERAL \n");}
 ;
-clausulas_catch_especificas : clausulas_catch_especifica
-                            | clausulas_catch_especificas clausulas_catch_especifica
+clausulas_catch_especificas : clausula_catch_especifica
+                            | clausulas_catch_especificas clausula_catch_especifica
 ;
 
 clausulas_catch_especifica_op :
-                              | clausulas_catch_especifica_op clausulas_catch_especifica
+                              | clausulas_catch_especifica_op clausula_catch_especifica
 ;
 
 /***************/
@@ -702,10 +710,162 @@ clausula_finally : FINALLY bloque_instrucciones
 instruccion_vacia : ';'
 ;
 
+/***************/
+/* expresion_postfija */
+/***************/
+
+expresion_postfija : expresion_constante {printf("EXPR POSTFIJA -> CONST \n");}
+                    | expresion_parentesis {printf("EXPR POSTFIJA -> PARENTESIS \n");}
+                    | expresion_funcional {printf("EXPR POSTFIJA -> FUNCIONAL \n");}
+                    | expresion_creacion_objeto {printf("EXPR POSTFIJA -> CREACION_OBJETO \n");}
+                    | expresion_indexada {printf("EXPR POSTFIJA -> INDEXADA \n");}
+                    | expresion_postfija INC {printf("EXPR POSTFIJA -> INC \n");}
+                    | expresion_postfija DEC {printf("EXPR POSTFIJA -> DEC \n");}
+;
+
+
+
+expresion_parentesis : '(' expresion ')'  {printf("EXPR PARENTESIS \n");}
+;
+/***************/
+/* expresion_funcional ::= identificador_anidado ’(’ ( expresion )* ’) */
+/***************/
+
+expresion_funcional : identificador_anidado '(' expresion_op_sep_comas ')'  {printf("EXPR FUNCIONAL \n");}
+;
+
+expresion_op_sep_comas :
+                        | expresion_op_sep_comas ',' expresion
+;
+
 
 /***************/
-/* EXPRESIONES */
+/* expresion_creacion_objeto ::= ’new’ identificador_anidado ’(’ ( expresion )* ’)’ */
 /***************/
+
+expresion_creacion_objeto : NEW identificador_anidado '(' expresion_op_sep_comas ')'  {printf("EXPR FUNCIONAL \n");}
+;
+
+
+/***************/
+/* expresion_indexada ::= identificador_anidado | expresion_indexada ’[’ expresion ’]’ | expresion_indexada ’->’ identificador_anidado */
+/***************/
+
+expresion_indexada : identificador_anidado  {printf("EXPR INDEXADA SOLO IDENT ANIDADO \n");}
+                    | expresion_indexada '[' expresion ']' {printf("EXPR INDEXADA EXPR \n");}
+                    | expresion_indexada PTR_ACCESO identificador_anidado {printf("EXPR INDEXADA PTR_ACCESO \n");}
+;
+
+
+/***************/
+/* OPERANDOS*/
+/* expresion_constante ::= ENTERO | REAL | CADENA | CARACTER | ’true’ | ’false’ */
+/***************/
+
+
+expresion_constante : ENTERO {printf("EXPR CONST -> ENTERO \n");}
+                    | REAL  {printf("EXPR CONST -> REAL \n");}
+                    | CADENA  {printf("EXPR CONST -> CADENA \n");}
+                    | CARACTER   {printf("EXPR CONST -> CARACTER \n");}
+                    | TRUE  {printf("EXPR CONST -> TRUE \n");}
+                    | FALSE  {printf("EXPR CONST -> FALSE \n");}
+;
+
+/***************/
+/* operador_prefijo */
+/***************/
+
+operador_prefijo : INC {printf("OP PREFIJO -> INC \n");}
+                 | DEC {printf("OP PREFIJO -> DEC \n");}
+                 | '&' {printf("OP PREFIJO -> AMPERS \n");}
+                 | '*' {printf("OP PREFIJO -> ASTERISCO \n");}
+                 | '+' {printf("OP PREFIJO -> MAS \n");}
+                 | '-' {printf("OP PREFIJO -> MENOS \n");}
+                 | '~' {printf("OP PREFIJO -> VIRGULILLA \n");}
+                 | '!' {printf("OP PREFIJO -> EXCLAMACION \n");}
+;
+
+/***************/
+/* expresion_prefija */
+/***************/
+
+expresion_prefija : expresion_postfija
+                   | SIZEOF expresion_prefija {printf("EXPR PREFIJA -> SIZEOF \n");}
+                   | SIZEOF '(' nombre_tipo ')' {printf("EXPR PREFIJA -> SIZEOF NOMBRE_TIPO \n");}
+                   | operador_prefijo expresion_cast {printf("EXPR PREFIJA -> OPERADOR EXPR CAST \n");}
+;
+
+
+/***************/
+/* expresion_cast ::= expresion_prefija | ’(’ nombre_tipo ’)’ expresion_prefija */
+/***************/
+
+expresion_cast : expresion_prefija
+                | '(' nombre_tipo ')' expresion_prefija
+;
+
+expresion_logica
+    : expresion_logica OR expresion_logica1                                   { printf ("\n\texp_logica -> exp_logica OR exp_logica1\n"); }
+    | expresion_logica1                                                       { printf ("\n\texp_logica -> exp_logica1 \n"); }
+    ;
+
+expresion_logica1
+    : expresion_logica1 AND expresion_logica2                                 { printf ("\n\texp_logica1 -> exp_logica1 AND exp_logica2\n"); }
+    | expresion_logica2                                                       { printf ("\n\texp_logica1 -> exp_logica2 \n"); }
+    ;
+
+expresion_logica2
+    : expresion_logica2 EQ expresion_logica3                                  { printf ("\n\texp_logica2 -> exp_logica2 EQ exp_logica3\n"); }
+    | expresion_logica2 NEQ expresion_logica3                                 { printf ("\n\texp_logica2 -> exp_logica2 NEQ exp_logica3\n"); }
+    | expresion_logica3
+    ;
+
+expresion_logica3
+    : expresion_logica3 '<' expresion_logica4                                 { printf ("\n\texp_logica3 -> exp_logica3 < exp_logica4\n"); }
+    | expresion_logica3 '>' expresion_logica4                                 { printf ("\n\texp_logica3 -> exp_logica3 > exp_logica4\n"); }
+    | expresion_logica3 GE expresion_logica4                                  { printf ("\n\texp_logica3 -> exp_logica3 GE exp_logica4\n"); }
+    | expresion_logica3 LE expresion_logica4                                  { printf ("\n\texp_logica3 -> exp_logica3 LE exp_logica4\n"); }
+    | expresion_logica4
+    ;
+
+expresion_logica4
+    : expresion_logica4 '|' expresion_logica5                                 { printf("\n\texp_logica4 -> exp_logica4 | exp_logica5\n"); }
+    | expresion_logica5                                                       { printf("\n\texp_logica4 -> exp_logica5 \n"); }
+    ;
+
+expresion_logica5
+    : expresion_logica5 '^' expresion_logica6                                 { printf ("\n\texp_logica5 -> exp_logica5 '^' exp_logica6\n"); }
+    | expresion_logica6                                                       { printf ("\n\texp_logica5 -> exp_logica6 \n"); }
+    ;
+
+expresion_logica6
+    : expresion_logica6 '&' expresion_logica7                                 { printf ("\n\texp_logica6 -> exp_logica7 & exp_logica6\n"); }
+    | expresion_logica7                                                       { printf ("\n\texp_logica6 -> exp_logica7 \n"); }
+    ;
+
+expresion_logica7
+    : expresion_logica7 DESPI expresion_logica8                               { printf ("\n\texp_logica7 -> exp_logica7 DESPI exp_logica8\n"); }
+    | expresion_logica7 DESPD expresion_logica8                               { printf ("\n\texp_logica7 -> exp_logica7 DESPD exp_logica8\n"); }
+    | expresion_logica8                                                       { printf ("\n\texp_logica7 -> exp_logica8 \n"); }
+    ;
+
+expresion_logica8
+    : expresion_logica8 '+' expresion_logica9                                 { printf ("\n\texp_logica8 -> exp_logica8 + exp_logica9\n"); }
+    | expresion_logica8 '-' expresion_logica9                                 { printf ("\n\texp_logica8 -> exp_logica8 - exp_logica9\n"); }
+    | expresion_logica9                                                       { printf ("\n\texp_logica8 -> exp_logica9\n"); }
+    ;
+
+expresion_logica9
+    : expresion_logica9 '*' expresion_cast                                    { printf ("\n\texp_logica9 -> exp_logica9 * exp_cast\n"); }
+    | expresion_logica9 '/' expresion_cast                                    { printf ("\n\texp_logica9 -> exp_logica9 / exp_cast\n"); }
+    | expresion_logica9 '%' expresion_cast                                    { printf ("\n\texp_logica9 -> exp_logica9 % exp_cast\n"); }
+    | expresion_cast                                                          { printf ("\n\texp_logica9 -> exp_cast\n"); }
+    ;
+
+expresion
+    : expresion_logica                                                        { printf ("\n\texp -> exp_logica\n"); }
+    | expresion_logica '?' expresion ':' expresion                            { printf ("\n\texp -> exp_logica ? exp : exp\n"); }
+    ;
 
 %%
 
@@ -726,7 +886,7 @@ int main(int argc, char *argv[]) {
     printf("Uso: ./c-sharpie NombreArchivo\n");
     }
   else {
-    yyin = fopen(argv[1],"r");
+    yyin = fopen(argv[1],"r\n");
     yyparse();
     }
   }
