@@ -50,7 +50,7 @@ declaracion : declaracion_espacio_nombres {printf("DECL -> ESPACIO_NOMBRES \n");
              | declaracion_variable {printf("DECL -> VARIABLES \n");}
              | declaracion_tipo {printf("DECL -> DECLARACION_TIPO \n");}
              | declaracion_funcion {printf("DECL -> DECLARACION_FUNCION \n");}
-             | error ';'  {yyerrok; printf("\tvariable_sin_identificador -> error \n");}             
+             | error ';'  {yyerrok; }
 ;
 
 /************/
@@ -367,20 +367,6 @@ declaracion_clase : modificadores_opcionales CLASS IDENTIFICADOR cuerpo_clase {p
                    | modificadores_opcionales CLASS IDENTIFICADOR herencia cuerpo_clase {printf("declaracion_clase con herencia \n");}
 ;
 
-modificadores_opcionales_clase :
-                                | modificadores_opcionales_clase modificador_clase
-;
-
-modificador_clase : NEW {printf("MOD CLASE -> NEW \n");}
-                  | PUBLIC {printf("MOD CLASE -> PUBLIC \n");}
-                  | PROTECTED {printf("MOD CLASE -> PROTECTED \n");}
-                  | INTERNAL {printf("MOD CLASE -> INTERNAL \n");}
-                  | PRIVATE {printf("MOD CLASE -> PRIVATE \n");}
-                  | ABSTRACT {printf("MOD CLASE -> ABSTRACT \n");}
-                  | SEALED {printf("MOD CLASE -> SEALED \n");}
-                  | STATIC {printf("MOD CLASE -> STATIC \n");}
-;
-
 /*********/
 /* cuerpo_clase ::= ’{’ [ declaracion_elemento_clase ]+ ’}’ */
 /*********/
@@ -408,20 +394,9 @@ declaracion_elemento_clase : declaracion_tipo {printf("declaracion tipo \n");}
 /* declaracion_atributo ::= [ modificador ]* declaracion_variable */
 /*********/
 
-declaracion_atributo : modificadores_atributo_op declaracion_variable {printf("declaracion atributo \n");}
+declaracion_atributo : modificadores_opcionales declaracion_variable {printf("declaracion atributo \n");}
 ;
 
-modificadores_atributo_op :
-                          | modificadores_atributo_op modificadores_atributo
-;
-modificadores_atributo : NEW {printf("MOD CLASE -> NEW \n");}
-                      | PUBLIC {printf("MOD ATRIBUTO -> PUBLIC \n");}
-                      | PROTECTED {printf("MOD ATRIBUTO -> PROTECTED \n");}
-                      | INTERNAL {printf("MOD ATRIBUTO -> INTERNAL \n");}
-                      | PRIVATE {printf("MOD ATRIBUTO -> PRIVATE \n");}
-                      | STATIC {printf("MOD ATRIBUTO -> STATIC \n");}
-
-;
 
 
 /*********/
@@ -434,18 +409,7 @@ declaracion_metodo : modificadores_opcionales firma_funcion bloque_instrucciones
 /* declaracion_constructor ::= [ modificador ]* cabecera_constructor bloque_instrucciones */
 /*********/
 
-declaracion_constructor : modificador_constr_opcional cabecera_constructor bloque_instrucciones {printf("DECLARACION CONSTRUCTOR \n");}
-;
-
-modificador_constr_opcional :
-                            | modificador_constr_opcional modificador_constr
-;
-
-modificador_constr :  PUBLIC {printf("MOD CONSTR -> PUBLIC \n");}
-                     | PROTECTED {printf("MOD CONSTR -> PROTECTED \n");}
-                     | INTERNAL {printf("MOD CONSTR -> INTERNAL \n");}
-                     | PRIVATE {printf("MOD CONSTR -> PRIVATE \n");}
-                     | EXTERN {printf("MOD CONSTR -> EXTERN \n");}
+declaracion_constructor : modificadores_opcionales cabecera_constructor bloque_instrucciones {printf("DECLARACION CONSTRUCTOR \n");}
 ;
 
 
