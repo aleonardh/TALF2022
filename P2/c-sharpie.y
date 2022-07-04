@@ -87,6 +87,7 @@ nombre_tipo_o_espacio_nombres_separados_por_coma : nombre_tipo_o_espacio_nombres
 
 identificador_con_tipos : IDENTIFICADOR {printf("ID_TIPOS -> ID \n");}
                         |  IDENTIFICADOR '(' nombre_tipo_o_espacio_nombres_separados_por_coma ')' {printf("ID_TIPOS -> ID CON NOMBRES\n");}
+                        | error ';'  {yyerrok; }
 ;
 
 /*******************/
@@ -469,10 +470,6 @@ parametros : '(' ')' {printf("PARAMETROS VACIOS \n");}
             | '(' argumentos_separados_por_punto_coma ')' {printf("PARAMETROS CON ARGS SEPARADOS POR ; \n");}
 ;
 
-// REGLA ANTIGUA
-/*argumentos_separados_por_punto_coma : argumentos
-                                    | argumentos_separados_por_punto_coma ';' argumentos
-;*/
 
 argumentos_separados_por_punto_coma : argumentos
                                     | argumentos_separados_por_punto_coma ';' argumentos
